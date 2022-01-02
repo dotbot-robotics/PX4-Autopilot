@@ -72,9 +72,9 @@ docker container run -it --rm -w "${SRC_DIR}" \
 	--env=PX4_UBSAN \
 	--env=TRAVIS_BRANCH \
 	--env=TRAVIS_BUILD_ID \
-	--publish 14556:14556/udp \
 	--env=DISPLAY \
 	--env=XDG_RUNTIME_DIR \
+	--net=host \
 	--volume=${CCACHE_DIR}:${CCACHE_DIR}:rw \
 	--volume=${SRC_DIR}:${SRC_DIR}:rw \
 	${PX4_DOCKER_REPO} /bin/bash -c "$@"
