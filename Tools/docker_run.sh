@@ -46,7 +46,18 @@ SRC_DIR=$PWD/../
 CCACHE_DIR=${HOME}/.ccache
 mkdir -p "${CCACHE_DIR}"
 
-docker run -it --rm -w "${SRC_DIR}" \
+xhost +SI:localuser:$USER
+export LIBGL_ALWAYS_INDIRECT=1
+
+docker container run -it --rm -w "${SRC_DIR}" \
+	-u user \
+	--security-opt=apparmor:unconfined --security-opt=seccomp:unconfined --cap-add=SYS_PTRACE --env=DISPLAY \
+	--gpus all -e NVIDIA_DRIVER_CAPABILITIES=all \
+	--volume="$HOME/.Xauthority:/home/user/.Xauthority:rw" \
+	--volume="/tmp/.X11-unix:/tmp/.X11-unix" \
+	--volume="$XDG_RUNTIME_DIR:$XDG_RUNTIME_DIR" \
+	--volume=/dev:/dev \
+	--privileged \
 	--env=AWS_ACCESS_KEY_ID \
 	--env=AWS_SECRET_ACCESS_KEY \
 	--env=BRANCH_NAME \
@@ -61,7 +72,9 @@ docker run -it --rm -w "${SRC_DIR}" \
 	--env=PX4_UBSAN \
 	--env=TRAVIS_BRANCH \
 	--env=TRAVIS_BUILD_ID \
-	--publish 14556:14556/udp \
+	--env=DISPLAY \
+	--env=XDG_RUNTIME_DIR \
+	--net=host \
 	--volume=${CCACHE_DIR}:${CCACHE_DIR}:rw \
 	--volume=${SRC_DIR}:${SRC_DIR}:rw \
-	${PX4_DOCKER_REPO} /bin/bash -c "$1 $2 $3"
+	${PX4_DOCKER_REPO} /bin/bash -c "$@"
