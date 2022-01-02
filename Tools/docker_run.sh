@@ -64,4 +64,4 @@ docker run -it --rm -w "${SRC_DIR}" \
 	--publish 14556:14556/udp \
 	--volume=${CCACHE_DIR}:${CCACHE_DIR}:rw \
 	--volume=${SRC_DIR}:${SRC_DIR}:rw \
-	${PX4_DOCKER_REPO} /bin/bash -c "$1 $2 $3"
+	${PX4_DOCKER_REPO} /bin/bash -c "$@"
